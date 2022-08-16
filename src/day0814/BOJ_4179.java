@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class BOJ4179 {
+public class BOJ_4179 {
 	static int R,C;
 	static int [][] maps;
 	static ArrayList<Integer> Successes;
