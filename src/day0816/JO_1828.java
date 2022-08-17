@@ -1,5 +1,4 @@
-package day0814;
-
+package day0816;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,21 +18,15 @@ public class JO_1828 {
 		}
 		int count = 1;
 		Collections.sort(ChList);
-		int lowP = ChList.get(0).low;
 		int highP = ChList.get(0).high;
 		for(int i = 1; i < N ; i++) {
-			if(highP >= ChList.get(i).low) {
-				lowP = ChList.get(i).low;
-			}
-			else { 	//현재 high륿 벗어난 low
+			if(highP < ChList.get(i).low) {
 				count++;
 				highP = ChList.get(i).high;
-				lowP = ChList.get(i).low;
 			}
 		}
 		System.out.println(count);
 	}
-
 }
 
 class ChemiTemp implements Comparable<ChemiTemp>{
@@ -45,6 +38,6 @@ class ChemiTemp implements Comparable<ChemiTemp>{
 	}
 	@Override
 	public int compareTo(ChemiTemp o) {
-		return this.low == o.low ? this.high-o.high : this.low - o.low; 
+		return this.low - o.low;
 	}
 }
