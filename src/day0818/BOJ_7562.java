@@ -1,4 +1,4 @@
-package day0817;
+package day0818;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,6 @@ public class BOJ_7562 {
 		int T = Integer.parseInt(read.readLine());
 		for(int test = 1; test <= T; test++) {
 			M = Integer.parseInt(read.readLine());
-			visited  = new boolean [M][M];
 			tokens = new StringTokenizer(read.readLine());
 			dirXY Night = new dirXY(Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken()));
 			tokens = new StringTokenizer(read.readLine());
@@ -30,16 +29,16 @@ public class BOJ_7562 {
 		System.out.println(sb);
 	}
 	static boolean isIn(int x, int y) {
-		return (x >= 0 && x < M && y >= 0 && y < M)? true : false;
+		return (x >= 0 && x < M*M && y >= 0 && y < M*M)? true : false;
 	}
-	static boolean [][] visited;
 	static ArrayList<dirXY> Dup;
 	static void BFS_Nights(dirXY N, int count) {
+		Dup = new ArrayList<>();
 		Queue<dirXY> NightMoveQ = new LinkedList<>();
 		NightMoveQ.add(N);
-		visited[N.x][N.y]= true; 
 		while(!NightMoveQ.isEmpty()) {
 			dirXY tempN = NightMoveQ.poll();
+			int dist = Math.abs(tempN.x-Dest.x) + Math.abs(tempN.y-Dest.y);
 			if(tempN.equals(Dest)) {
 				sb.append(tempN.c + "\n");
 				NightMoveQ = new LinkedList<>();
@@ -49,9 +48,11 @@ public class BOJ_7562 {
 				int tempx = tempN.x + MoveAmount[MoveDir[i][0]];
 				int tempy = tempN.y + MoveAmount[MoveDir[i][1]];
 				if(isIn(tempx,tempy)) {
-					if(visited[tempx][tempy]) continue;
-					visited[tempx][tempy] = true;
-					NightMoveQ.add(new dirXY(tempx, tempy, tempN.c+1));
+					if(Math.abs(tempx - Dest.x) + Math.abs(tempy - Dest.y) > dist) continue;
+					dirXY tempXY = new dirXY(tempx,tempy,tempN.c+1);
+					if(NightMoveQ.contains(tempXY)) continue;
+					Dup.add(tempXY);
+					NightMoveQ.add(tempXY);
 				}
 			}
 		}
