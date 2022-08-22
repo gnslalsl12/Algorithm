@@ -3,7 +3,7 @@ package day0811;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class BitMasking {
+public class visited {
 	
 	
 	static int N, R, totalCnt;
