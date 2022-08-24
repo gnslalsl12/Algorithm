@@ -1,4 +1,4 @@
-package day0823_temp;
+package day0823;
 
 import java.io.BufferedReader;
 import java.io.IOException;
