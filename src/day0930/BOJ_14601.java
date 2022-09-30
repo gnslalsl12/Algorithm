@@ -58,7 +58,7 @@ public class BOJ_14601 {
 				dir = 1;
 			}
 		}
-		System.out.println("Hx, Hy : " + Hx + ", " + Hy);
+		System.out.println("Hx, Hy : " + Hx + ", " + Hy); 
 		System.out.println("x, y  : " + startx + ", " + starty);
 		System.out.println("dir : " + dir);
 		Fill4X4(startx, starty, dir);
