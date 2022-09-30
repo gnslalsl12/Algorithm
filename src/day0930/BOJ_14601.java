@@ -26,7 +26,6 @@ public class BOJ_14601 {
 		int Hy = Hxx - 1;
 		maps[Hx][Hy] = -1;
 
-		boolean found = false;
 		// 오른쪽 위 채우기부터
 		count = 1;
 		int dir = 0;
@@ -45,20 +44,20 @@ public class BOJ_14601 {
 		} // 초기 타일 세팅
 		int startx = Hx - Hx % 4;
 		int starty = Hy - Hy % 4;
-		if(Hx%4 == 0 || Hx%4 == 1) {
-			if(Hy%4 == 0 || Hy%4 == 1) {
+		if (Hx % 4 == 0 || Hx % 4 == 1) {
+			if (Hy % 4 == 0 || Hy % 4 == 1) {
 				dir = 3;
-			}else {
+			} else {
 				dir = 0;
 			}
-		}else {
-			if(Hy%4 == 0 || Hy%4 == 1) {
+		} else {
+			if (Hy % 4 == 0 || Hy % 4 == 1) {
 				dir = 2;
-			}else {
+			} else {
 				dir = 1;
 			}
 		}
-		System.out.println("Hx, Hy : " + Hx + ", " + Hy); 
+		System.out.println("Hx, Hy : " + Hx + ", " + Hy);
 		System.out.println("x, y  : " + startx + ", " + starty);
 		System.out.println("dir : " + dir);
 		Fill4X4(startx, starty, dir);
