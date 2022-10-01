@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class BOJ_15684 {
+public class BOJ_15684_trash {
 	static int N, M, H;
 	static int [][]maps;
 	static int Totalcount;;
