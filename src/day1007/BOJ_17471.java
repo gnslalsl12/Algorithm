@@ -18,7 +18,7 @@ public class BOJ_17471 {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer tokens = new StringTokenizer(read.readLine());
 		N = Integer.parseInt(tokens.nextToken());
-		maps = new boolean[N + 1][N + 1];
+		maps = new boolean[N + 1][N + 2];
 		people = new int[N + 1];
 		tokens = new StringTokenizer(read.readLine());
 		for (int n = 1; n <= N; n++) { // N개의 노드
