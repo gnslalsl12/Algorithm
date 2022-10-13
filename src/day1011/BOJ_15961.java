@@ -21,7 +21,6 @@ public class BOJ_15961 {
 		d = Integer.parseInt(tokens.nextToken()); // 초밥 종류 수
 		k = Integer.parseInt(tokens.nextToken()); // 연속해서 먹을 수 있는 접시 수
 		c = Integer.parseInt(tokens.nextToken()); // 쿠폰 초밥 번호
-		boolean[] ObjIndex = new boolean[N];
 		selected = new int[d + 1];
 		for (int i = 0; i < N; i++) {
 			int temp = Integer.parseInt(read.readLine());
@@ -29,9 +28,6 @@ public class BOJ_15961 {
 				tempSushi.add(temp);
 			}
 			Sushis.add(temp);
-			if (temp == c) {
-				ObjIndex[i] = true;
-			}
 		}
 		int totalresult = 0;
 		int result = 0;
