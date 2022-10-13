@@ -39,21 +39,21 @@ public class BOJ_2642 {
 				}
 			}
 			if (hcount > 4 || vcount > 4) {
-				System.out.println(0);
+				System.out.print(0);
 				return;
 			}
 		}
 		if (count != 6) {
-			System.out.println(0);
+			System.out.print(0);
 			return;
 		}
 		for (dirXY pop : Planes) {
 			if (!BFS(pop)) {
-				System.out.println(0);
+				System.out.print(0);
 				return;
 			}
 		}
-		System.out.println(found);
+		System.out.print(found);
 
 	}
 
@@ -74,6 +74,9 @@ public class BOJ_2642 {
 				if (start.x == temp.x && start.y == temp.y) {
 					dirs[dir] = true;
 				} else if (dirs[dir]) {
+					if (Math.abs(nextx - start.x) + Math.abs(nexty - start.y) == 2
+							&& Math.abs(nextx - start.x) * Math.abs(nexty - start.y) == 1)
+						return false;
 					if (maps[start.x][start.y] == 1) {
 						found = maps[nextx][nexty];
 					}

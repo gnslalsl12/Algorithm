@@ -11,7 +11,6 @@ public class BOJ_1917 {
 	static int[][] maps = new int[6][6];
 	static int[][] deltas = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 	static Queue<dirXY> Planes = new LinkedList<>();
-//	static int found = 0;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
@@ -20,14 +19,12 @@ public class BOJ_1917 {
 		continueall: for (int tc = 0; tc < 3; tc++) {
 			maps = new int[6][6];
 			Planes = new LinkedList<>();
-//			int count = 0;
 			for (int i = 0; i < 6; i++) {
 				tokens = new StringTokenizer(read.readLine());
 				for (int j = 0; j < 6; j++) {
 					maps[i][j] = Integer.parseInt(tokens.nextToken());
 					if (maps[i][j] != 0) {
 						Planes.offer(new dirXY(i, j));
-//						count++;
 					}
 				}
 			}
@@ -43,7 +40,6 @@ public class BOJ_1917 {
 					}
 				}
 				if (hcount > 4 || vcount > 4) {
-//					System.out.println("no");
 					if (tc == 2) {
 						sb.append("no");
 					} else {
@@ -52,14 +48,8 @@ public class BOJ_1917 {
 					continue continueall;
 				}
 			}
-//			if (count != 6) {
-////				System.out.println("no");
-//				sb.append("no\n");
-//				continue continueall;
-//			}
 			for (dirXY pop : Planes) {
 				if (!BFS(pop)) {
-//					System.out.println("no");
 					if (tc == 2) {
 						sb.append("no");
 					} else {
@@ -95,9 +85,9 @@ public class BOJ_1917 {
 				if (start.x == temp.x && start.y == temp.y) {
 					dirs[dir] = true;
 				} else if (dirs[dir]) {
-//					if (maps[start.x][start.y] == 1) {
-//						found = maps[nextx][nexty];
-//					}
+					if (Math.abs(nextx - start.x) + Math.abs(nexty - start.y) == 2
+							&& Math.abs(nextx - start.x) * Math.abs(nexty - start.y) == 1)
+						return false;
 					return true;
 				}
 				BFSQ.add(new dirXY(nextx, nexty));
