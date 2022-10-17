@@ -4,108 +4,113 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class BOJ_1043 {
 	static int N, M;
-	static int parent[];
-	static boolean[][] partys;
+	static int[] parent;
+	static boolean[][] participate;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer tokens = new StringTokenizer(read.readLine());
 		N = Integer.parseInt(tokens.nextToken());
 		M = Integer.parseInt(tokens.nextToken());
+		participate = new boolean[M][N + 1];
+		tokens = new StringTokenizer(read.readLine());
 		parent = new int[N + 1];
-		for (int i = 1; i <= N; i++) {
+		for (int i = 0; i <= N; i++) {
 			parent[i] = i;
 		}
-		boolean[] musttrue = new boolean[N + 1];
-		tokens = new StringTokenizer(read.readLine());
-		int truepeople = Integer.parseInt(tokens.nextToken());
-		if (truepeople > 0) {
-			int p = Integer.parseInt(tokens.nextToken());
-			musttrue[p] = true;
-			for (int i = 1; i < truepeople; i++) {
-				int k = Integer.parseInt(tokens.nextToken());
-				musttrue[k] = true;
-				if (!isSame(p, k)) {
-					union(p, k);
-				}
-			}
-
-		}
-		partys = new boolean[M][N + 1];
+		int trues = Integer.parseInt(tokens.nextToken());
+		for (int i = 0; i < trues; i++) {
+			int temptrue = Integer.parseInt(tokens.nextToken());
+			union(0, temptrue);
+		}	
 		for (int party = 0; party < M; party++) {
 			tokens = new StringTokenizer(read.readLine());
-			int participate = Integer.parseInt(tokens.nextToken());
-			if (participate > 0) {
-				int firstp = Integer.parseInt(tokens.nextToken());
-				partys[party][firstp] = true;
-				for (int pct = 1; pct < participate; pct++) {
-					int nextp = Integer.parseInt(tokens.nextToken());
-					partys[party][nextp] = true;
-					if (!isSame(firstp, nextp)) {
-						union(firstp, nextp);
+			int peope = Integer.parseInt(tokens.nextToken());
+			boolean containtrue = false;
+			for (int p = 0; p < peope; p++) {
+				int person = Integer.parseInt(tokens.nextToken());
+				participate[party][person] = true;
+				if (find(person) == 0)
+					containtrue = true;
+			}
+			if (containtrue) {
+				for (int n = 1; n <= N; n++) {
+					if (participate[party][n]) {
+						union(n, 0);
 					}
 				}
-
 			}
-		}
-		
-		
-		for (int i = 1; i <= N; i++) {
-			if (musttrue[parent[i]] || musttrue[i]) {
-				musttrue[i] = musttrue[parent[i]] = true;
-			}
-		}
-		for (int i = 1; i <= N; i++) {
-			if (musttrue[parent[i]] || musttrue[i]) {
-				musttrue[i] = musttrue[parent[i]] = true;
-			}
-		}
-		int count = M;
-		for (int party = 0; party < M; party++) {
-			for (int person = 1; person <= N; person++) {
-				if (partys[party][person] && musttrue[person]) {
-					count--;
-//					System.out.println("거짓 불가능 : " + (party + 1));
-					break;
+		} // parent가 smallesttrue면 진실 말해야하는 사람
+		boolean[] party = new boolean [M];
+		for(int test = 0; test < M; test++) {
+			for (int revparty = M - 1; revparty >= 0; revparty--) {
+				boolean availtrue = true;
+				for (int p = 1; p <= N; p++) {
+					if (participate[revparty][p] && find(p) == 0) {
+						availtrue = false;
+						for (int n = 1; n <= N; n++) { 
+							if (participate[revparty][n]) {
+								union(n, 0);
+							}
+						}
+					}
 				}
+				if(availtrue) party[revparty] = true;
+				else party[revparty] = false;
 			}
 		}
-//		System.out.println(Arrays.toString(musttrue));
-//		System.out.println(parent[1]);
-//		System.out.println(parent[2]);
-//		System.out.println(parent[3]);
-//		System.out.println();
-		;
-//		for (boolean[] p : partys) {
-//			System.out.println(Arrays.toString(p));
-//		}
+		int count = 0;
+		for(int i = 0; i < M; i++) {
+			if(party[i]) count++;
+		}
 		System.out.println(count);
 	}
 
-	private static void union(int x, int y) {
-		int px = find(x);
-		int py = find(y);
-		if (px < py) {
-			parent[py] = px;
-		} else {
-			parent[px] = py;
+	private static void print() {
+		System.out.println("////진실을 아는 사람////");
+		for (int i = 1; i <= N; i++) {
+			if (find(i) == 0)
+				System.out.printf("%d  ", i);
+			else
+				System.out.printf("0  ");
 		}
+		System.out.println();
+		System.out.println("////파티 정보////");
+		for (int i = 0; i < M; i++) {
+			for (int j = 1; j <= N; j++) {
+				if (participate[i][j])
+					System.out.printf("%d ", j);
+				System.out.printf("%d ", 0);
+
+			}
+			System.out.println();
+		}
+		System.out.println("///////////////////////");
+
 	}
 
 	private static int find(int x) {
 		if (parent[x] == x)
 			return x;
-		return find(parent[x]);
+		return parent[x] = find(parent[x]);
+	}
+
+	private static void union(int x, int y) {
+		x = find(x);
+		y = find(y);
+		if (x < y)
+			parent[y] = x;
+		else
+			parent[x] = y;
 	}
 
 	private static boolean isSame(int x, int y) {
-		if (find(x) == find(y))
-			return true;
-		return false;
+		return find(x) == find(y);
 	}
-
 }

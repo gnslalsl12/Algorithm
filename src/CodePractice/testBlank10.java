@@ -3,70 +3,58 @@ package CodePractice;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class testBlank10 { 
-	static int N, M;
-	static ArrayList<Node> [] NodeList;
-	static boolean [] visited;
-	static int [] Dist;
+public class testBlank10 {
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer tokens = new StringTokenizer(read.readLine());
-		N = Integer.parseInt(tokens.nextToken());
-		tokens = new StringTokenizer(read.readLine());
-		M = Integer.parseInt(tokens.nextToken());
-		visited = new boolean[N+1];
-		NodeList = new ArrayList[N+1];
-		for(int i = 1; i <= M; i++) {
-			NodeList[i] = new ArrayList<>();
-		}
-		Dist = new int[N+1];
-		for(int i = 0; i< M; i++) {
-			tokens = new StringTokenizer(read.readLine());
-			int point = Integer.parseInt(tokens.nextToken());
-			int line = Integer.parseInt(tokens.nextToken());
-			int value = Integer.parseInt(tokens.nextToken());
-			NodeList[point].add(new Node(line, value));
-		}
-		
-		
-	}
-	
-	private static void DIJKSTRA(int startpoint) {
-		PriorityQueue<Node> PQ = new PriorityQueue<>();
-		PQ.add(new Node(startpoint, 0));
-		while(!PQ.isEmpty()) {
-			Node temp  = PQ.poll();
-			if(visited[temp.line])continue;
-			visited[temp.line] = true;
-			for(Node next : NodeList[temp.line]) {
-				if(visited[next.line]) continue;
-				if(Dist[next.line]> temp.tempvalue + next.tempvalue) {
-					Dist[next.line]= temp.tempvalue + next.tempvalue;
-					PQ.add(new Node(next.line, Dist[next.line]);
-				}
-			}
-			
-		}
-	}
-	
-	private static class Node implements Comparable<Node>{
-		int line;
-		int tempvalue;
-		public Node(int line, int tempvalue) {
-			super();
-			this.line = line;
-			this.tempvalue = tempvalue;
-		}
-		@Override
-		public int compareTo(Node o) {
-			return Integer.compare(this.tempvalue, o.tempvalue);
-		}
-		
+	public static int[] parent = new int[1000001];
+
+	public static int find(int x) {
+		if (x == parent[x])
+			return x;
+		else
+			return parent[x] = find(parent[x]);
 	}
 
+	public static void union(int x, int y) {
+		x = find(x);
+		y = find(y);
+		// 같은 부모를 가지고 있지 않을 때
+		if (x != y) {
+			// y가 x 보다 크다는 것을 가정한다면 아래와 같이 표현
+			parent[y] = x;
+			// 더 작은 값으로 넣어 줄 때 다음과 같이도 표현 가능
+			/*
+			 * if(x < y) parent[y] = x; else parent[x] = y;
+			 */
+		}
+	}
+
+	// 같은 부모 노드를 가지는지 확인
+	public static boolean isSameParent(int x, int y) {
+		x = find(x);
+		y = find(y);
+		if (x == y) {
+			x = 5;
+			return true;
+		}
+		else {
+			x = 5;
+			return false;
+		}
+	}
+
+	public static void main(String[] args) {
+		for (int i = 1; i <= 8; i++) {
+			parent[i] = i;
+		}
+		int a = 1;
+		int b = 2;
+		union(a, b);
+		System.out.println(a);
+		System.out.println(b);
+		System.out.println(find(b));
+		
+
+	}
 }
