@@ -22,16 +22,16 @@ public class BOJ_1654 {
 			list.add(Integer.parseInt(read.readLine()));
 		}
 		Collections.sort(list);
-		int set = 1;
+		long set = 1;
 		while(true) {
-			int count = 0;
+			long count = 0;
 			for(int i = 0; i < K; i++) {
 				count += list.get(i)/set;
 			}
-			if(count <= N) break;
+			if(count < N) break;
 			set++;
 		}
-		write.write((set+1) + "\n");
+		write.write((set-1) + "\n");
 		write.close();
 	}
 }
