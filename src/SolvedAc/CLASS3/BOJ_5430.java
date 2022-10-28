@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 public class BOJ_5430 {
 
@@ -19,12 +20,16 @@ public class BOJ_5430 {
 			int N = Integer.parseInt(read.readLine());
 			String templine = read.readLine();
 			Deque<Integer> dq = new LinkedList<>();
-			for (int i = 1; i < templine.length() - 1; i++) {
-				if (templine.charAt(i) == ',')
-					continue;
-				dq.add(templine.charAt(i) - '0');
+			templine = templine.replace('[', ',');
+			templine = templine.replace(']', ',');
+			StringTokenizer token = new StringTokenizer(templine, ",");
+			while(token.hasMoreTokens()) {
+				dq.add(Integer.parseInt(token.nextToken()));
+						
 			}
+			
 			boolean reverse = false;
+			
 			for (int i = 0; i < orders.length(); i++) {
 				if (orders.charAt(i) == 'R')
 					reverse = !reverse;
@@ -40,11 +45,11 @@ public class BOJ_5430 {
 					}
 				}
 			}
+//			if(dq.isEmpty()) {
+//				sb.append("error\n");
+//				continue;
+//			}
 			tempsb.append("[");
-			if(dq.isEmpty()) {
-				sb.append("error\n");
-				continue;
-			}
 			while (!dq.isEmpty()) {
 				if(reverse) {
 					tempsb.append(dq.pollLast());
@@ -56,6 +61,7 @@ public class BOJ_5430 {
 					tempsb.append(",");
 				}
 			}
+			
 			tempsb.append("]\n");
 			sb.append(tempsb);
 		}
