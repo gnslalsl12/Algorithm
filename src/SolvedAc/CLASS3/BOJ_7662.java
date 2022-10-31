@@ -4,8 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class BOJ_7662 {
 
@@ -13,40 +16,38 @@ public class BOJ_7662 {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
 		int T = Integer.parseInt(read.readLine());
-		for (int test = 0; test < T; test++) {
-			PriorityQueue<Integer> pq = new PriorityQueue<>();
-			PriorityQueue<Integer> rpq = new PriorityQueue<>(Collections.reverseOrder());
-			int k = Integer.parseInt(read.readLine());
+		for (int test = 1; test <= T; test++) {
+			int N = Integer.parseInt(read.readLine());
 			StringTokenizer tokens;
-			for (int i = 0; i < k; i++) {
+			TreeMap<Integer, Integer> tm = new TreeMap<>();
+			for (int i = 0; i < N; i++) {
 				tokens = new StringTokenizer(read.readLine());
 				char order = tokens.nextToken().charAt(0);
-				int number = Integer.parseInt(tokens.nextToken());
+				int num = Integer.parseInt(tokens.nextToken());
 				if (order == 'I') {
-					pq.add(number);
-					rpq.add(number);
+					tm.put(num, tm.getOrDefault(num, 0) + 1);
 				} else {
-					if (number == 1) {
-						if (!rpq.isEmpty())
-							rpq.poll();
+					if (tm.isEmpty())
+						continue;
+					if (num == -1) {
+						if (tm.get(tm.firstKey()) == 1) {
+							tm.remove(tm.firstKey());
+						} else {
+							tm.put(tm.firstKey(), tm.get(tm.firstKey()) - 1);
+						}
 					} else {
-						if (!pq.isEmpty())
-							pq.poll();
+						if (tm.get(tm.lastKey()) == 1) {
+							tm.remove(tm.lastKey());
+						} else {
+							tm.put(tm.lastKey(), tm.get(tm.lastKey()) - 1);
+						}
 					}
 				}
-				if(pq.isEmpty() || rpq.isEmpty()) {
-					pq.clear();
-					rpq.clear();
-				}
-				System.out.println(order + " " +number);
-				System.out.println(pq);
-				System.out.println(rpq);
-				System.out.println();
 			}
-			if(rpq.isEmpty() || pq.isEmpty()) {
+			if (tm.isEmpty()) {
 				sb.append("EMPTY\n");
-			}else {
-				sb.append(String.format("%d %d\n", rpq.peek(), pq.peek()));
+			} else {
+				sb.append(String.format("%d %d\n", tm.lastKey(), tm.firstKey()));
 			}
 		}
 		System.out.print(sb);
