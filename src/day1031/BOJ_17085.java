@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -35,19 +36,20 @@ public class BOJ_17085 {
 		while (!tempavail.isEmpty()) {
 			getHoly(tempavail.poll());
 		} // Hlist에 십자가 후보들 생성
-		Collections.sort(Hlist);
 		int result = -1;
+		PriorityQueue<Hcomb> Hcomblist = new PriorityQueue<>();
 		for (int i = 0; i < Hlist.size(); i++) {
-			int[] biggermap = Hlist.get(i).tempmaps;
+			int size1 = Hlist.get(i).size;
 			for (int j = i + 1; j < Hlist.size(); j++) {
-				int[] smallermap = Hlist.get(j).tempmaps;
-
-				if (!AvailComb(biggermap, smallermap)) {
-					continue;
-				} else { // 가능한 십자가 경우
-					int tempresult = Hlist.get(i).size * Hlist.get(j).size;
-					result = Math.max(result, tempresult);
-				}
+				int size2= Hlist.get(j).size;
+				Hcomblist.add(new Hcomb(i, j, size1*size2));
+			}
+		}
+		while(!Hcomblist.isEmpty()) {
+			Hcomb pop = Hcomblist.poll();
+			if(AvailComb(Hlist.get(pop.index1).tempmaps, Hlist.get(pop.index2).tempmaps)) {
+				result = pop.sum;
+				break;
 			}
 		}
 		System.out.println(result);
@@ -93,8 +95,25 @@ public class BOJ_17085 {
 	private static boolean isIn(int x, int y) {
 		return x >= 0 && x < N && y >= 0 && y < M;
 	}
+	
+	private static class Hcomb implements Comparable<Hcomb>{
+		int index1;
+		int index2;
+		int sum;
+		public Hcomb(int index1, int index2, int sum) {
+			super();
+			this.index1 = index1;
+			this.index2 = index2;
+			this.sum = sum;
+		}
+		@Override
+		public int compareTo(Hcomb o) {
+			return Integer.compare(o.sum, this.sum);
+		}
+		
+	}
 
-	private static class Holy implements Comparable<Holy> {
+	private static class Holy {
 		dirXY startpoint;
 		int size;
 		int[] tempmaps;
@@ -104,11 +123,6 @@ public class BOJ_17085 {
 			this.startpoint = startpoint;
 			this.size = (len * 4) + 1;
 			this.tempmaps = tempmaps;
-		}
-
-		@Override
-		public int compareTo(Holy o) {
-			return Integer.compare(o.size, this.size);
 		}
 
 	}
