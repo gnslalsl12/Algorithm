@@ -1,4 +1,4 @@
-package day1105;
+package SolvedAc.CLASS3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,6 @@ public class BOJ_17626 {
 		int tempN = (int) Math.sqrt(N);
 		int tempcount = 5;
 		int tempresult = 0;
-		System.out.println("tempN : " + tempN);
 		for (int i = tempN; i >= 1; i--) {
 			tempresult = i * i;
 			if (tempresult > N)
@@ -25,28 +24,33 @@ public class BOJ_17626 {
 
 			for (int j = i; j >= 1; j--) {
 				tempresult += j * j;
-				if (tempresult > N)
+				if (tempresult > N) {
+					tempresult -= j * j;
 					continue;
-				else if (tempresult == N) {
+				} else if (tempresult == N) {
 					tempcount = Math.min(tempcount, 2);
+					tempresult -= j * j;
 					break;
 				}
 
 				for (int k = j; k >= 1; k--) {
 					tempresult += k * k;
-					if (tempresult > N)
+					if (tempresult > N) {
+						tempresult -= k * k;
 						continue;
-					else if (tempresult == N) {
+					} else if (tempresult == N) {
 						tempcount = Math.min(tempcount, 3);
+						tempresult -= k * k;
 						break;
 					}
 
 					for (int l = k; l >= 1; l--) {
 						tempresult += l * l;
-						if(i == 105 && j == 15 && k == 8 && l == 5) System.out.println("????");
-						if (tempresult > N)
+						if (tempresult > N) {
+							tempresult -= l * l;
 							continue;
-						else if (tempresult == N) {
+						} else if (tempresult == N) {
+							tempresult -= l * l;
 							tempcount = Math.min(tempcount, 4);
 							break;
 						}
