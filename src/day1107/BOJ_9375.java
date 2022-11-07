@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -14,11 +12,8 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class BOJ_9375 {
-	static long [] factorial = new long [32];
+
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		factorial[1] = 1;
-		fact(20);
-		System.out.println(Arrays.toString(factorial));
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
 		int T = Integer.parseInt(read.readLine());
@@ -43,24 +38,13 @@ public class BOJ_9375 {
 				String temp = q.poll();
 				qq.add(closet.get(temp));
 			}
-			int tempsum = 0;
-			long tempfact = 1;
-			while(!qq.isEmpty()) {
-				int tempnum = qq.poll();
-				tempsum += tempnum+1;
-				tempfact *= fact(tempnum+1);
+			int result = 1;
+			while (!qq.isEmpty()) {
+				result *= (qq.poll() + 1);
 			}
-			long result = (fact(tempsum)/tempfact)-1;
-			
+			result--;
 			write.write(result + "\n");
 		}
 		write.close();
-	}
-	
-	private static long fact(int num) {
-		if(factorial[num] != 0) {
-			return factorial[num];
-		}
-		return factorial[num] = factorial[num-1] * num;
 	}
 }
