@@ -1,4 +1,4 @@
-package SolvedAc.CLASS3;
+package day1109;
 
 import java.io.BufferedReader;
 import java.io.IOException;
