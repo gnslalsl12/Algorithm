@@ -18,22 +18,25 @@ public class BOJ_6064 {
 			StringTokenizer tokens = new StringTokenizer(read.readLine());
 			M = Integer.parseInt(tokens.nextToken());
 			N = Integer.parseInt(tokens.nextToken());
-			x = Integer.parseInt(tokens.nextToken());
-			y = Integer.parseInt(tokens.nextToken());
-			long i = 0;
-			for (i = M + x; i <= M*N; i += M) {
-				if (i % N == y) {
+			x = Integer.parseInt(tokens.nextToken()) - 1;
+			y = Integer.parseInt(tokens.nextToken()) - 1;
+			long year = 0;
+			if (N + M + x + y == 4) {
+				write.write("1\n");
+				continue;
+			}
+			for (year = x; year < M * N; year += M) {
+				if (year % N == y) {
 					break;
 				}
 			}
-			if (i > M*N) {
+			if (year >= M * N) {
 				write.write("-1\n");
 			} else {
-				write.write(i + "\n");
+				write.write((year + 1) + "\n");
 			}
 		}
 		write.close();
-
 	}
 
 }
