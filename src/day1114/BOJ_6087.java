@@ -3,9 +3,7 @@ package day1114;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class BOJ_6087 {
@@ -45,13 +43,14 @@ public class BOJ_6087 {
 	}
 
 	private static int bfs() {
-		Queue<dirXY> BFSQ = new LinkedList<>();
+		PriorityQueue<dirXY> BFSQ = new PriorityQueue<>();
 		BFSQ.add(startC);
 		int result = Integer.MAX_VALUE;
 		while (!BFSQ.isEmpty()) {
 			dirXY temp = BFSQ.poll();
 			if (temp.x == destC.x && temp.y == destC.y) {
 				result = Math.min(result, temp.turncount);
+				break;
 			}
 			if (maps[temp.x][temp.y] < temp.turncount)
 				continue;
@@ -92,6 +91,9 @@ public class BOJ_6087 {
 
 		@Override
 		public int compareTo(dirXY o) {
+			if (this.turncount == o.turncount)
+				return Integer.compare((Math.abs(this.x - destC.x) + Math.abs(this.y - destC.y)),
+						Math.abs(o.x - destC.x) + Math.abs(o.y - destC.y));
 			return Integer.compare(this.turncount, o.turncount);
 		}
 

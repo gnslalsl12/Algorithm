@@ -3,15 +3,15 @@ package day1114;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class BOJ_13459 {
 	static int N, M;
 	static int[] maps;
 	static dirXY Hole, firstR, firstB;
-	static Queue<DirInfo> BFSQ;
+	static Stack<DirInfo> BFSSTACK;
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
@@ -43,19 +43,18 @@ public class BOJ_13459 {
 	}
 
 	private static boolean rollBfs() throws CloneNotSupportedException {
-		BFSQ = new LinkedList<>();
-		BFSQ.add(new DirInfo('S', 0, firstR, firstB));
+		BFSSTACK = new Stack<>();
+		BFSSTACK.add(new DirInfo('S', 0, firstR, firstB));
 		boolean Result = false;
 		int Rhole = 2;
 		int Bhole = 2;
-		while (!BFSQ.isEmpty()) {
-			DirInfo temp = BFSQ.poll();
+		while (!BFSSTACK.isEmpty()) {
+			DirInfo temp = BFSSTACK.pop();
+			if (temp.count > 10) {
+				continue;
+			}
 			dirXY R = temp.tempR;
 			dirXY B = temp.tempB;
-			if (temp.count > 10) {
-				Result = false;
-				break;
-			}
 
 			if (temp.dir == 'U') {
 				if (R.x < B.x) {
@@ -123,14 +122,14 @@ public class BOJ_13459 {
 	}
 
 	private static void addMoreDir(DirInfo tempinfo) throws CloneNotSupportedException {
-		if (tempinfo.dir != 'U')
-			BFSQ.add(new DirInfo('U', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
-		if (tempinfo.dir != 'R')
-			BFSQ.add(new DirInfo('R', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
-		if (tempinfo.dir != 'D')
-			BFSQ.add(new DirInfo('D', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
-		if (tempinfo.dir != 'L')
-			BFSQ.add(new DirInfo('L', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
+		if (tempinfo.dir != 'U' || tempinfo.dir != 'D') {
+			BFSSTACK.add(new DirInfo('U', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
+			BFSSTACK.add(new DirInfo('D', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
+		}
+		if (tempinfo.dir != 'R' || tempinfo.dir != 'L') {
+			BFSSTACK.add(new DirInfo('R', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
+			BFSSTACK.add(new DirInfo('L', tempinfo.count + 1, tempinfo.tempR, tempinfo.tempB));
+		}
 	}
 
 	private static int rolling(char dir, dirXY ball, dirXY R, dirXY B) {
@@ -140,16 +139,16 @@ public class BOJ_13459 {
 		switch (dir) {
 		case ('U'): {
 			for (int i = ball.x - 1; i >= 0; i--) {
-				if (i == Hole.x && ball.y == Hole.y) { // ±¸¸Û¿¡ ºüÁ³³ª?
+				if (i == Hole.x && ball.y == Hole.y) { // ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
 					ball.x = i;
 					IntoHole = true;
 					break;
 				}
-				if ((maps[i] & (1 << ball.y)) == 0) { // º® ¸¸³ª¸é ±× ÀÌÀü À§Ä¡·Î
+				if ((maps[i] & (1 << ball.y)) == 0) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.x = i + 1;
 					break;
 				}
-				if (i == R.x && ball.y == R.y || i == B.x && ball.y == B.y) { // °ø ¸¸³ª¸é ±× Àü À§Ä¡·Î
+				if (i == R.x && ball.y == R.y || i == B.x && ball.y == B.y) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.x = i + 1;
 					break;
 				}
@@ -167,7 +166,7 @@ public class BOJ_13459 {
 					ball.y = i - 1;
 					break;
 				}
-				if (ball.x == R.x && i == R.y || ball.x == B.x && i == B.y) { // °ø ¸¸³ª¸é ±× Àü À§Ä¡·Î
+				if (ball.x == R.x && i == R.y || ball.x == B.x && i == B.y) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.y = i - 1;
 					break;
 				}
@@ -176,16 +175,16 @@ public class BOJ_13459 {
 		}
 		case ('D'): {
 			for (int i = ball.x + 1; i < N; i++) {
-				if (i == Hole.x && ball.y == Hole.y) { // ±¸¸Û¿¡ ºüÁ³³ª?
+				if (i == Hole.x && ball.y == Hole.y) { // ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
 					ball.x = i;
 					IntoHole = true;
 					break;
 				}
-				if ((maps[i] & (1 << ball.y)) == 0) { // º® ¸¸³ª¸é ±× ÀÌÀü À§Ä¡·Î
+				if ((maps[i] & (1 << ball.y)) == 0) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.x = i - 1;
 					break;
 				}
-				if (i == R.x && ball.y == R.y || i == B.x && ball.y == B.y) { // °ø ¸¸³ª¸é ±× Àü À§Ä¡·Î
+				if (i == R.x && ball.y == R.y || i == B.x && ball.y == B.y) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.x = i - 1;
 					break;
 				}
@@ -203,7 +202,7 @@ public class BOJ_13459 {
 					ball.y = i + 1;
 					break;
 				}
-				if (ball.x == R.x && i == R.y || ball.x == B.x && i == B.y) { // °ø ¸¸³ª¸é ±× Àü À§Ä¡·Î
+				if (ball.x == R.x && i == R.y || ball.x == B.x && i == B.y) { // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½
 					ball.y = i + 1;
 					break;
 				}
@@ -212,11 +211,11 @@ public class BOJ_13459 {
 		}
 		}
 		if (IntoHole) {
-			return 1; // ±¸¸Û¿¡ ºüÁü
+			return 1; // ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 		} else if (beforex == ball.x && beforey == ball.y) {
-			return 0; // ¿òÁ÷ÀÌÁö ¾ÊÀ½
+			return 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		} else {
-			return 2; // ÀÏ´Ü ¿òÁ÷ÀÌ±ä ÇÔ
+			return 2; // ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½
 		}
 	}
 
