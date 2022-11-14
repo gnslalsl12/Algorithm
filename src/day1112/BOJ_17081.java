@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class BOJ_17081 {
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
 		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer tokens = new StringTokenizer(read.readLine());
 		N = Integer.parseInt(tokens.nextToken());
 		M = Integer.parseInt(tokens.nextToken());
@@ -72,7 +70,7 @@ public class BOJ_17081 {
 			int exp = Integer.parseInt(tokens.nextToken());
 			MonsterDict.put(getNumXY(x, y), new Monster(name, pow, def, hp, exp));
 		}
-		System.out.println();
+		// System.out.println();
 		for (int i = 0; i < boxes; i++) {
 			tokens = new StringTokenizer(read.readLine());
 			int x = Integer.parseInt(tokens.nextToken());
@@ -101,32 +99,15 @@ public class BOJ_17081 {
 			}
 			BoxDict.put(getNumXY(x, y), new Item(type, value));
 		}
-		System.out.println();
-		// input//////////////////////////////////////////////////////////////////////
-
 		GameResult = "";
 		turncount = 0;
 		maps[Hoony.loc.x][Hoony.loc.y] = '.';
 		breakgame: while (!Moves.isEmpty()) {
 			turncount++;
-
-			System.out.println();
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println();
-			System.out.println("움직임 목록  : " + Moves);
-			System.out.println("움직일 방향 : " + Moves.peek());
 			Hoony.Hmove(Moves.poll());
 			char step = maps[Hoony.loc.x][Hoony.loc.y];
-			printamap();
-			System.out.println();
-			System.out.println("턴 : " + turncount);
-			System.out.println(Hoony);
 			switch (step) {
 			case ('&'): {
-				System.out.println("몬스터랑 싸운다!");
-				System.out.println(MonsterDict.get(getNumXY(Hoony.loc.x, Hoony.loc.y)));
 				boolean win = battleWith(Hoony.loc, false);
 				String monstername = MonsterDict.get(getNumXY(Hoony.loc.x, Hoony.loc.y)).name;
 				if (win) {
@@ -138,21 +119,17 @@ public class BOJ_17081 {
 					} else {
 						Hoony.Exp += monster.exp;
 					}
-					System.out.println("레벨업 전 : ");
-					System.out.println(Hoony);
 					levelUp();
 					maps[Hoony.loc.x][Hoony.loc.y] = '.';
 				} else {
 					if (youDied()) {
-						GameResult = "YOU HAVE BEEN KILLED BY " + monstername + " ..";
+						GameResult = "YOU HAVE BEEN KILLED BY " + monstername + "..";
 						break breakgame;
 					}
 				}
 				break;
 			}
 			case ('M'): {
-				System.out.println("보스랑 싸워!!!!!!!!!!!!!");
-				System.out.println(MonsterDict.get(getNumXY(Hoony.loc.x, Hoony.loc.y)));
 				boolean win = battleWith(Hoony.loc, true);
 				String monstername = MonsterDict.get(getNumXY(Hoony.loc.x, Hoony.loc.y)).name;
 				if (win) {
@@ -160,26 +137,23 @@ public class BOJ_17081 {
 					if (Hoony.Inventory[0])
 						Hoony.Hp = Math.min(Hoony.Hp + 3, Hoony.MaxHp);
 					if (Hoony.Inventory[3]) { // 경험치 1.2배
-						Hoony.Exp += (int) monster.exp * (1.2);
+						Hoony.Exp += Math.floor(monster.exp * (1.2));
 					} else {
 						Hoony.Exp += monster.exp;
 					}
-					System.out.println("보스 죽임!!!!!!!!!!");
-					System.out.println(Hoony);
 					levelUp();
 					maps[Hoony.loc.x][Hoony.loc.y] = '.';
 					GameResult = "YOU WIN!";
 					break breakgame;
 				} else {
 					if (youDied()) { // 살아나지 못하고 죽음
-						GameResult = "YOU HAVE BEEN KILLED BY " + monstername + " ..";
+						GameResult = "YOU HAVE BEEN KILLED BY " + monstername + "..";
 						break breakgame;
 					}
 				}
 				break;
 			}
-			case ('^'): {
-				System.out.println("아야");
+			case ('^'): { // 아야
 				if (Hoony.Inventory[4]) {
 					Hoony.Hp--;
 				} else {
@@ -191,11 +165,8 @@ public class BOJ_17081 {
 				}
 				break;
 			}
-			case ('B'): {
-				System.out.println("현재 아이템 목록 : \n" + BoxDict);
-				System.out.println("먹을 위치 : " + getNumXY(Hoony.loc.x, Hoony.loc.y));
+			case ('B'): { // 헉
 				Item item = BoxDict.remove(getNumXY(Hoony.loc.x, Hoony.loc.y));
-				System.out.println("헉" + item);
 				if (item.itemtype == 'W') {
 					Hoony.WeaponPow = item.value;
 				} else if (item.itemtype == 'A') {
@@ -207,33 +178,10 @@ public class BOJ_17081 {
 				break;
 			}
 			}// switch
-			System.out.println("결과 : ");
-			System.out.println(Hoony);
 			if (Moves.isEmpty())
 				GameResult = "Press any key to continue.";
 		}
 		printResult();
-
-	}
-
-	private static void printResult() throws IOException {
-		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println();
-		System.out.println();
-		System.out.println("최종 : ");
-		printamap();
-		write.write(String.format("Passed Turns : %d\n", turncount));
-		write.write(String.format("LV : %d\n", Hoony.Level));
-		write.write(String.format("HP : %d/%d\n", Hoony.Hp, Hoony.MaxHp));
-		write.write(String.format("ATT : %d+%d\n", Hoony.Pow, Hoony.WeaponPow));
-		write.write(String.format("DEF : %d+%d\n", Hoony.Def, Hoony.ArmorDef));
-		write.write(String.format("EXP : %d/%d\n", Hoony.Exp, Hoony.MaxExp));
-		write.write(GameResult);
-		write.close();
 	}
 
 	private static void levelUp() {
@@ -261,82 +209,49 @@ public class BOJ_17081 {
 		realpow = Math.max(1, realpow);
 		int realdamage = monster.pow - Hoony.Def - Hoony.ArmorDef;
 		realdamage = Math.max(1, realdamage);
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("realpow : " + realpow);
-		System.out.println("realdamage : " + realdamage);
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("전투 시작 : " );
+		// 첫턴만 분별
 		if (boss) {
-			System.out.println("보스전");
 			if (Hoony.Inventory[5]) {
 				Hoony.Hp = Hoony.MaxHp;
-			} // 장신구 있으면 풀피
-			monster.hp -= realpow; // 한 대 떄리고
+			} // 풀피 충전
+			monster.hp -= realpow;
 			if (monster.hp <= 0) {
-				System.out.println("한 번에 죽임");
 				return true;
 			}
-			if (!Hoony.Inventory[5]) { // 장신구 없으면 첫턴도 맞음
-				System.out.println("한 대 맞음 : " + Hoony.Hp);
+			if (!Hoony.Inventory[5]) {
 				Hoony.Hp -= realdamage;
-			}else {
-				System.out.println("장신구로 첫 탄 피함");
 			}
-			if (Hoony.Hp < 0) {
+			if (Hoony.Hp <= 0)
 				return false;
+		} else {
+			monster.hp -= realpow;
+			if (monster.hp <= 0) {
+				return true;
 			}
+			Hoony.Hp -= realdamage;
+			if (Hoony.Hp <= 0)
+				return false;
 		}
+		realpow = Math.max(Hoony.Pow + Hoony.WeaponPow - monster.def, 1);
 		boolean gameresult = false;
 		while (true) {
-			System.out.println("턴 시작 : == : " + Hoony.Hp + " : " + monster.hp);
 			monster.hp -= realpow;
-			if(monster.hp <= 0) {
+			if (monster.hp <= 0) {
 				gameresult = true;
-				System.out.println("이김");
-				System.out.println("나 vs 몬스터 : " + Hoony.Hp + " : " + monster.hp);
 				break;
 			}
 			Hoony.Hp -= realdamage;
-			if(Hoony.Hp <= 0) {
-				System.out.println("짐");
-				System.out.println("나 vs 몬스터 : " + Hoony.Hp + " : " + monster.hp);
+			if (Hoony.Hp <= 0) {
 				gameresult = false;
 				break;
 			}
 		}
 		return gameresult;
-
-//		if (boss) {
-//			if (Hoony.Inventory[5]) {
-//				Hoony.Hp = Hoony.MaxHp;
-//				monster.hp -= realpow;
-//			} // 첫턴 설정
-//			if (monster.hp <= 0) {
-//				return true;
-//			}
-//		}
-//		int count = monster.hp / realpow; // 몬스터를 죽이게되는 턴 수
-//		count = Math.max(count - 1, 1);
-//		Hoony.Hp -= realdamage * count;
-//		if (Hoony.Hp <= 0) // 죽이기 직전 카운트까지 맞았을 때 내가 죽나?
-//			return false;
-//
-//		monster.hp -= realpow * (count + 1);
-//		if (monster.hp <= 0)
-//			return true;
-//
-//		Hoony.Hp -= realdamage;
-//		if (Hoony.Hp <= 0)
-//			return false;
-		// 몬스터는 무조건 죽음
-//		return true;
-
 	}
 
 	private static void getO(int item) {
 		if (Hoony.InvenSize == 4 || Hoony.Inventory[item])
 			return;
-		System.out.println("장착!");
 		Hoony.Inventory[item] = true;
 		Hoony.InvenSize++;
 	}
@@ -400,15 +315,6 @@ public class BOJ_17081 {
 				this.loc = new dirXY(tempx, tempy);
 			}
 		}
-
-		@Override
-		public String toString() {
-			return "**************************************\n" + "위치 : " + loc + "\nHp : " + Hp + "/" + MaxHp
-					+ "\nPow : " + Pow + " + (" + WeaponPow + ")" + "\nDef : " + Def + " + (" + ArmorDef + ")"
-					+ "\nLevel : " + Level + "\nExp : " + Exp + "/" + MaxExp + "\nInvenSize : " + InvenSize
-					+ "\nInventory : " + Arrays.toString(Inventory) + "\n**************************************";
-		}
-
 	}
 
 	private static class Item {
@@ -420,12 +326,6 @@ public class BOJ_17081 {
 			this.itemtype = itemtype;
 			this.value = value;
 		}
-
-		@Override
-		public String toString() {
-			return "위치에 : [itemtype=" + itemtype + ", value=" + value + "]\n";
-		}
-
 	}
 
 	private static class Monster implements Cloneable {
@@ -442,12 +342,6 @@ public class BOJ_17081 {
 			this.def = def;
 			this.hp = hp;
 			this.exp = exp;
-		}
-
-		@Override
-		public String toString() {
-			return "====================\n" + "Monster name : " + name + "\nhp : " + hp + "\npow : " + pow + "\ndef : "
-					+ def + "\nexp : " + exp + "\n====================";
 		}
 
 		@Override
@@ -471,29 +365,32 @@ public class BOJ_17081 {
 			this.x = x;
 			this.y = y;
 		}
-
-		@Override
-		public String toString() {
-			return "dirXY [x=" + x + ", y=" + y + "]";
-		}
-
 	}
 
 	private static void printamap() {
 		StringBuilder sb = new StringBuilder();
-//		System.out.println("#################");
 		for (int i = 1; i <= N; i++) {
 			for (int j = 1; j <= M; j++) {
-				if (i == Hoony.loc.x && j == Hoony.loc.y) {
-					sb.append("@ ");
+				if (i == Hoony.loc.x && j == Hoony.loc.y && Hoony.Hp > 0) {
+					sb.append("@");
 				} else
-					sb.append(maps[i][j] + "");
+					sb.append(maps[i][j]);
 			}
 			sb.append("\n");
 		}
 		System.out.print(sb);
-
-//		System.out.println("#################");
 	}
 
+	private static void printResult() throws IOException {
+		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
+		printamap();
+		write.write(String.format("Passed Turns : %d\n", turncount));
+		write.write(String.format("LV : %d\n", Hoony.Level));
+		write.write(String.format("HP : %d/%d\n", Math.max(Hoony.Hp, 0), Hoony.MaxHp));
+		write.write(String.format("ATT : %d+%d\n", Hoony.Pow, Hoony.WeaponPow));
+		write.write(String.format("DEF : %d+%d\n", Hoony.Def, Hoony.ArmorDef));
+		write.write(String.format("EXP : %d/%d\n", Hoony.Exp, Hoony.MaxExp));
+		write.write(GameResult);
+		write.close();
+	}
 }
