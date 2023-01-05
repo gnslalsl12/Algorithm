@@ -45,7 +45,7 @@ public class BOJ_20168 {
 		write.write(result + "\n");
 		write.close();
 		read.close();
-	}
+	} 
 
 	private static int getDIJK(int start) { // 경로 중 가장 큰 비용이 전체 모든 경로에서 가장 작은 경로의 최대 비용
 		int[][] Dist = new int[N + 1][2]; // 0은 거기까지 가는데 총 비용, 1은 그 경로 중 최댓값
