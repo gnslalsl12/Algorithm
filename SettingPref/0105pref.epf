@@ -1,0 +1,10 @@
+#Thu Jan 05 09:44:37 KST 2023
+\!/=
+/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.formatterprofiles.version=14
+/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates><template autoinsert\="false" context\="catchblock_context" deleted\="false" description\="Code in new catch blocks" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.catchblock" name\="catchblock">${exception_var}.printStackTrace();</template><template autoinsert\="false" context\="methodbody_context" deleted\="false" description\="Code in created method stubs" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.methodbody" name\="methodbody">${body_statement}</template><template autoinsert\="false" context\="constructorbody_context" deleted\="false" description\="Code in created constructor stubs" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.constructorbody" name\="constructorbody">${body_statement}\r\n</template></templates>
+/instance/org.eclipse.recommenders.models.rcp/ignore.download.failures=always
+/instance/org.eclipse.ui.workbench/org.eclipse.ui.commands=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<org.eclipse.ui.commands>\r\n<keyBinding commandId\="org.eclipse.ui.newWizard" contextId\="org.eclipse.ui.contexts.window" keyConfigurationId\="org.eclipse.ui.defaultAcceleratorConfiguration" keySequence\="CTRL+SHIFT+N">\r\n<parameter id\="newWizardId" value\="org.eclipse.jdt.ui.wizards.NewClassCreationWizard"/>\r\n</keyBinding>\r\n<keyBinding contextId\="org.eclipse.ui.contexts.window" keyConfigurationId\="org.eclipse.ui.defaultAcceleratorConfiguration" keySequence\="CTRL+SHIFT+N"/>\r\n<keyBinding contextId\="org.eclipse.ui.contexts.window" keyConfigurationId\="org.eclipse.ui.defaultAcceleratorConfiguration" keySequence\="CTRL+SHIFT+N"/>\r\n</org.eclipse.ui.commands>
+@org.eclipse.jdt.ui=3.15.0.v20180829-2215
+@org.eclipse.recommenders.models.rcp=2.5.4.v20180909-1132
+@org.eclipse.ui.workbench=3.112.0.v20180906-1121
+file_export_version=3.0
