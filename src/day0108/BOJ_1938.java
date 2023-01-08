@@ -28,7 +28,7 @@ public class BOJ_1938 {
 		for (int i = 0; i < N; i++) {
 			String templine = read.readLine();
 			for (int j = 0; j < N; j++) {
-				char temp = templine.charAt(j);
+				char temp = templine.charAt(j); 
 				if (temp == 'B') {
 					if (Bcount == 0) {
 						firstB[0][0] = i;
