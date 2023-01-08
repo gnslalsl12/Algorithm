@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -50,7 +49,6 @@ public class BOJ_10218 {
 			}
 			boolean totalresult = true;
 			for (int i = 0; i < StartList.size(); i++) {
-//				System.out.println("시작점 하나//////////////////");
 				dirXY temp = StartList.get(i);
 				int before = answers.size();
 				search(temp);
@@ -66,7 +64,7 @@ public class BOJ_10218 {
 					int tempdirst = answers.poll();
 					if(tempdirst < 0) break;
 					for (int i = 0; i < StartList.size(); i++) {
-						if (!lastSearch(StartList.get(i), tempdirst)) { // 실패경로
+						if (!lastSearch(StartList.get(i), tempdirst)) {
 							lastresult = false;
 							break;
 						}
@@ -77,12 +75,9 @@ public class BOJ_10218 {
 					}
 				}
 			}
-			if (!totalresult) {
+			if (!totalresult || !lastresult) {
 				write.write("XHAE\n");
-//				System.out.println("실패");
 			} else {
-//				System.out.println("성공");
-//				System.out.println(resultdir);
 				String dirresult = Integer.toString(resultdir);
 				for (int i = 0; i < dirresult.length(); i++) {
 					if (dirresult.charAt(i) == '0')
@@ -96,9 +91,7 @@ public class BOJ_10218 {
 				}
 				write.write("\n");
 			}
-//			System.out.println("끝");
 		}
-//		System.out.println("////////////////");
 		write.close();
 		read.close();
 
@@ -106,7 +99,6 @@ public class BOJ_10218 {
 
 	private static boolean lastSearch(dirXY input, int dirstack) {
 		String tempdirstack = Integer.toString(dirstack);
-		System.out.println("방향 스택 : " + tempdirstack);
 		int tempx = input.x;
 		int tempy = input.y;
 		for (int i = 0; i < tempdirstack.length(); i++) {
@@ -130,8 +122,6 @@ public class BOJ_10218 {
 		ST.add(input);
 		while (!ST.isEmpty()) {
 			dirXY temp = ST.pop();
-			// System.out.println(temp.count + " 번쨰 경로===========================");
-			// System.out.println(temp.x + ", " + temp.y);
 			if (temp.count == 10)
 				continue;
 			int lastdir = temp.lastdirstacked % 10;
@@ -143,15 +133,11 @@ public class BOJ_10218 {
 				boolean holed = false;
 				if ((Maps[temp.x + deltas[dir][0]] & 1 << (temp.y + deltas[dir][1])) == 0
 						&& (temp.x + deltas[dir][0] != Hx && temp.y + deltas[dir][1] != Hy))
-					continue; // 바로 옆이 벽
-				// System.out.println("\n새로운 방향으로");
-				// System.out.println("이전 방향 : " + lastdir);
-				// System.out.println("방향 : " + dir);
+					continue;
 				for (int len = 0; len <= 10; len++) {
 					nextx += deltas[dir][0];
 					nexty += deltas[dir][1];
-					if ((Maps[nextx] & (1 << nexty)) == 0) { // 벽 만남
-						// System.out.println("벽만났어 : 길이 = " + len);
+					if ((Maps[nextx] & (1 << nexty)) == 0) {
 						if (nextx == Hx && nexty == Hy)
 							holed = true;
 						nextx -= deltas[dir][0];
@@ -159,13 +145,10 @@ public class BOJ_10218 {
 						break;
 					}
 				}
-				// System.out.println("도착지 : " + nextx + ", " + nexty);
 				int madedirstack = temp.lastdirstacked * 10 + dir;
-				if (holed) { // 구멍 도착
+				if (holed) {
 					answers.add(madedirstack);
-					// System.out.println("구멍도착");
 				} else {
-					// System.out.println("스택 추가");
 					if (temp.count == 9)
 						continue;
 					ST.add(new dirXY(nextx, nexty, temp.count + 1, madedirstack));
