@@ -52,7 +52,7 @@ public class Main {
 		}
 		Deltas = new int[][] { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 		IslandCount = 0;
-		IslandStates = new ArrayList<>(); // 처음엔 섬의 첫 위치값, 그 다음엔
+		IslandStates = new ArrayList<>(); // 처음엔 섬의 첫 위치값, 그 다음엔 둘러싼 섬(모섬) 번호
 		Vis = new boolean[N][M];
 		read.close();
 	}
@@ -170,10 +170,7 @@ public class Main {
 				}
 			}
 		}
-		setResult(eachHeights, maxHeight);
-	}
-
-	private static void setResult(int[] eachHeights, int maxHeight) { // 각 높이별 개수 세기
+		// 각 높이별 개수 세기
 		Result = new int[maxHeight + 1];
 		for (int isl = 1; isl <= IslandCount; isl++) {
 			Result[eachHeights[isl]]++;
