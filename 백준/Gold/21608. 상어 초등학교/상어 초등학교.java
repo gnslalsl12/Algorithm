@@ -7,7 +7,6 @@ public class Main {
 	static ArrayList<int[]> LikeList;
 	static int[][] Map;
 	static int[][] Deltas;
-	static Comparator<int[]> Comp;
 	static int Result;
 
 	public static void main(String[] args) throws IOException {
@@ -29,15 +28,6 @@ public class Main {
 					Integer.parseInt(tokens.nextToken()) });
 		}
 		Deltas = new int[][] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
-		Comp = new Comparator<int[]>() {
-			@Override
-			public int compare(int[] x1, int[] x2) {
-				return (x1[0] == x2[0])
-						? (x1[1] == x2[1]) ? Integer.compare(x1[2], x2[2]) : Integer.compare(x2[1], x1[1])
-						: Integer.compare(x2[0], x1[0]);
-				// 카운트가 큰 것들 부터, 카운트가 같으면 빈 칸이 많은 것부터, 같으면 위치가 작은 것들부터
-			}
-		};
 		Result = 0;
 		read.close();
 	}
@@ -53,13 +43,13 @@ public class Main {
 	private static void setSit() {
 		for (int[] info : LikeList) {
 			int student = info[0];
-			Queue<Integer> sideLocs = new LinkedList<>(); // 이 아이가 앉을 자리들 후보보
-			for (int index = 1; index <= 4; index++) { // 선호하는 아이 4명명
+			Queue<Integer> sideLocs = new LinkedList<>(); // 이 아이가 앉을 자리들 후보
+			for (int index = 1; index <= 4; index++) { // 선호하는 아이 4명
 				int like = info[index];
 				if (Seated[like] != -1) { // 선호하는 아이가 앉아있다면
 					int likeLocI = Seated[like] / N;
 					int likeLocJ = Seated[like] % N; // 해당 아이의 위치
-					for (int[] dir : Deltas) { // 해당 위치의 인접위치치
+					for (int[] dir : Deltas) { // 해당 위치의 인접위치
 						int sideLocI = likeLocI + dir[0];
 						int sideLocJ = likeLocJ + dir[1];
 						if (!isIn(sideLocI, sideLocJ) || Map[sideLocI][sideLocJ] != 0)
@@ -75,13 +65,13 @@ public class Main {
 				locsCount[loc / N][loc % N]++;
 				if (locsCount[loc / N][loc % N] == 1)
 					sideLocs.add(loc); // 하나씩만 넣기
-			} // 자리마다 선호하는 아이의 수 기록록
+			} //후보 자리마다 인접한 선호 학생 카운트
 			sideLocsSize = sideLocs.size();
 
 			int selectedLoc = -1;
 			int maxLikes = 0;
 			int maxEmpties = 0;
-			while (sideLocsSize-- > 0) {
+			while (sideLocsSize-- > 0) {    //후보 자리들 중
 				int loc = sideLocs.poll();
 				int locI = loc / N;
 				int locJ = loc % N;
@@ -91,7 +81,7 @@ public class Main {
 					if (isIn(locI + dir[0], locJ + dir[1]) && Map[locI + dir[0]][locJ + dir[1]] == 0)
 						empty++;
 				}
-				if (like > maxLikes) {
+				if (like > maxLikes) {    //문제의 조건에 맞게 적정 위치 선별
 					maxLikes = like;
 					maxEmpties = empty;
 					selectedLoc = loc;
@@ -106,16 +96,16 @@ public class Main {
 					}
 				}
 			}
-			if (selectedLoc == -1) {
-				selectedLoc = getProferEmpty();
+			if (selectedLoc == -1) {    //만약 선호한 아이 옆에 앉을 수 있는 자리가 없다면
+				selectedLoc = getProferEmpty();    //빈자리 중 적정 위치 하나 가져오기
 			}
 
-			Map[selectedLoc / N][selectedLoc % N] = student;
-			Seated[student] = selectedLoc;
+			Map[selectedLoc / N][selectedLoc % N] = student;    //아이 앉히기
+			Seated[student] = selectedLoc;    //아이 위치 기록
 		}
 	}
 
-	private static int getProferEmpty() {
+	private static int getProferEmpty() {    //맵 전체를 둘러보며 빈자리 중 적당한 위치 찾기
 		int loc = -1;
 		int maxEmptyCount = -1;
 		for (int i = 0; i < N; i++) {
@@ -147,9 +137,9 @@ public class Main {
 			int count = -1;
 			for (int index = 1; index <= 4; index++) {
 				int likesLoc = Seated[info[index]];
-				if (studentLoc + N == likesLoc || studentLoc - N == likesLoc) // 위 또는 아리
+				if (studentLoc + N == likesLoc || studentLoc - N == likesLoc) // 위 또는 아래
 					count++;
-				else if (studentLoc / N == likesLoc / N && Math.abs(studentLoc - likesLoc) == 1)
+				else if (studentLoc / N == likesLoc / N && Math.abs(studentLoc - likesLoc) == 1) //양 옆
 					count++;
 			}
 			if (count > -1)
