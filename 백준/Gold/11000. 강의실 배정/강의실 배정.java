@@ -1,59 +1,54 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-	static int N;
-	static PriorityQueue<TimeTable> OrderedTimeTables = new PriorityQueue<>();
-	static int Result;
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
-		N = Integer.parseInt(read.readLine());
-		for (int i = 0; i < N; i++) {
-			StringTokenizer tokens = new StringTokenizer(read.readLine());
-			int start = Integer.parseInt(tokens.nextToken());
-			int end = Integer.parseInt(tokens.nextToken());
-			OrderedTimeTables.add(new TimeTable(start, end));
-		}
-		solv();
-		write.write(Result + "\n");
-		write.close();
-		read.close();
-	}
-
-	private static void solv() {
-		searchAscending();
-	}
-
-	private static void searchAscending() {
-		PriorityQueue<Integer> Rooms = new PriorityQueue<>();
-		Rooms.add(OrderedTimeTables.poll().end);	//가장 빠르게 시작하는 수업은 일단 추가 (36라인 Rooms Null Point 방지)
-		while (!OrderedTimeTables.isEmpty()) {
-			TimeTable temp = OrderedTimeTables.poll();
-			if (Rooms.peek() <= temp.start) {	//가장 빠르게 끝나는 강의실 다음으로 배정 가능한 수업인가
-				Rooms.poll();	//그럼 그 강의실을 대신해서 쓸 것임
-			}	//그게 아니라면 그냥 강의실 하나 추가 (가장 빠르게 끝나는 강의실에 배치가 안된다면, 그 이후 강의실도 배치 불가능이므로)
-			Rooms.add(temp.end);
-		}
-		Result = Rooms.size();
-	}
-
-	private static class TimeTable implements Comparable<TimeTable> {
-		int start;
-		int end;
-
-		public TimeTable(int start, int end) {
-			this.start = start;
-			this.end = end;
-		}
-
-		@Override
-		public int compareTo(TimeTable obj) {	//시작 시간부터 오름차순, 같으면 종료 시간 오름차순
-			return obj.start == this.start ? Integer.compare(this.end, obj.end)
-					: Integer.compare(this.start, obj.start);
-		}
-
-	}
-
+    static int N;
+    static Comparator<int[]> Comp;
+    static PriorityQueue<int[]> ClassList;
+    static int Result;
+    
+    public static void main(String[] args) throws IOException{
+        init();
+        solv();
+    }
+    
+    private static void init()throws IOException{
+        BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(read.readLine());
+        Comp = new Comparator<int[]>(){
+            @Override
+            public int compare(int[] x1, int[] x2){
+                return x1[0]==x2[0]? Integer.compare(x1[1], x2[1]) : Integer.compare(x1[0],x2[0]);
+            }
+        };
+        ClassList = new PriorityQueue<>(Comp);
+        while(N-- > 0){
+            StringTokenizer tokens = new StringTokenizer(read.readLine());
+            ClassList.add(new int [] {Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken())});
+        }
+        Result = 0;
+        read.close();
+    }
+    
+    private static void solv() throws IOException{
+        BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
+        getClassRoomCount();
+        write.write(Result + "\n");
+        write.close();
+    }
+    
+    private static void getClassRoomCount(){
+        PriorityQueue<Integer> endTimeList = new PriorityQueue<>();
+        endTimeList.add(0);
+        //=> 가장 빨리 끝나는 하나의 강의실로도 커버가 안되면 뒤에 강의실도 다 안되는 거니까
+        while(!ClassList.isEmpty()){
+            int earliestEndTime = endTimeList.peek();   //가장 빨리 끝나는 강의실 시간
+            int [] nextClass = ClassList.poll();    //다음 강의의
+            if(earliestEndTime <= nextClass[0]){ //가장 빨리 끝나는 강의 다음으로 붙일 수 있음
+                endTimeList.poll(); //해당 강의실 시간 없애기
+            }
+            endTimeList.add(nextClass[1]);//새로운 강의 끝시간 추가
+        }
+        Result = endTimeList.size();
+    }
 }
