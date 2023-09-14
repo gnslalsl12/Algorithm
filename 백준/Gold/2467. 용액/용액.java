@@ -1,26 +1,34 @@
-import java.util.*;
 import java.io.*;
 
 public class Main {
     static int N;
-    static PriorityQueue<convertInt> Bottles;
-    static int[] Result;
+    static int [] Bottles;
+    static int [] Result;
     
-    public static void main(String args[]) throws IOException{
-     init();
-     solv();
+    public static void main(String[] args) throws IOException{
+        init();
+        solv();
     }
     
     private static void init() throws IOException{
-        BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(read.readLine());
-        Bottles = new PriorityQueue<>();
-        StringTokenizer tokens = new StringTokenizer(read.readLine());
+        N = readInt();
+        Bottles = new int [N];
         for(int n = 0; n < N; n++){
-            Bottles.add(new convertInt(Integer.parseInt(tokens.nextToken())));
+            Bottles[n] = readInt();
         }
         Result = new int [2];
-        read.close();
+    }
+    
+    private static int readInt() throws IOException{
+        int n, c;
+        boolean negative = false;
+        do{
+            n = System.in.read();
+            if(n == 45) negative = true;
+        } while(n <= 45);
+        n &= 15;
+        while((c = System.in.read()) > 45) n = (n<<3) + (n<<1) + (c&15);
+        return negative? -n : n;
     }
     
     private static void solv() throws IOException{
@@ -31,37 +39,24 @@ public class Main {
     }
     
     private static void getResult(){
+        int left = 0;
+        int right =  N-1;
+        int diff;
         int min = Integer.MAX_VALUE;
-        int valueBefore = 0;
-        int valueAfter = Bottles.poll().num;
-        while(!Bottles.isEmpty()){
-            valueBefore = valueAfter;
-            valueAfter = Bottles.poll().num;
-            if(min > Math.abs(valueBefore + valueAfter)){
-                min = Math.abs(valueBefore + valueAfter);
-                if(valueBefore < valueAfter){
-                    Result[0] = valueBefore;
-                    Result[1] = valueAfter;
-                }else{
-                    Result[0] = valueAfter;
-                    Result[1] = valueBefore;
-                }
-                if(min == 0) return;
+        while(left < right){
+            diff = Bottles[left] + Bottles[right];
+            if(min > Math.abs(diff)){
+                min = Math.abs(diff);
+                Result[0] = Bottles[left];
+                Result[1] = Bottles[right];
+            }
+            if(diff == 0){
+                return;
+            }else if(diff > 0){ //양수를 줄여줘야함
+                right--;
+            }else if(diff < 0){ //음수를 높여야함
+                left++;
             }
         }
     }
-    
-    private static class convertInt implements Comparable<convertInt>{
-        int num;
-        
-        public convertInt(int num){
-            this.num = num;
-        }
-        
-        @Override
-        public int compareTo(convertInt input){
-            return Math.abs(num) - Math.abs(input.num);
-        }
-    }
-
 }
