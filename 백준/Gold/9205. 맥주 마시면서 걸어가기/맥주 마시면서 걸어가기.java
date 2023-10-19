@@ -1,10 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 class Main {
 	static int N;
@@ -14,24 +9,18 @@ class Main {
 	static boolean result;
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
-		StringTokenizer tokens = new StringTokenizer(read.readLine());
-		int T = Integer.parseInt(tokens.nextToken());
+		int T = readInt();
 		for (int test = 0; test < T; test++) {
 			CVlist = new ArrayList<>();
 			BFSQ = new LinkedList<>();
-			tokens = new StringTokenizer(read.readLine());
-			N = Integer.parseInt(tokens.nextToken());
-			tokens = new StringTokenizer(read.readLine());
-			start = new dirXY(Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken()));
+			N = readInt();
+			start = new dirXY(readInt(), readInt());
 			result = false;
 			for (int i = 0; i < N; i++) {
-				tokens = new StringTokenizer(read.readLine());
-				CVlist.add(new dirXY(Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken())));
+				CVlist.add(new dirXY(readInt(), readInt()));
 			}
-			tokens = new StringTokenizer(read.readLine());
-			end = new dirXY(Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken()));
+			end = new dirXY(readInt(), readInt());
 			CVlist.add(end);
 			BFSQ.add(start);
 			BFS();
@@ -41,6 +30,21 @@ class Main {
 				sb.append("sad\n");
 		}
 		System.out.print(sb);
+	}
+    
+    	private static int readInt() throws IOException {
+		int n, c;
+		boolean neg = false;
+		do {
+			n = System.in.read();
+			if (n == 45)
+				neg = true;
+		} while (n <= 45);
+		n &= 15;
+		while ((c = System.in.read()) > 45) {
+			n = (n << 3) + (n << 1) + (c & 15);
+		}
+		return neg ? -n : n;
 	}
 
 	private static void BFS() {
