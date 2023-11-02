@@ -1,25 +1,19 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int N, M;
 	static boolean[][] maps;
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer tokens;
-		N = Integer.parseInt(read.readLine());
-		M = Integer.parseInt(read.readLine());
+		N = readInt();
+		M = readInt();
 		maps = new boolean[N][N];
 		for (int i = 0; i < N; i++) {
-			tokens = new StringTokenizer(read.readLine());
 			for (int j = 0; j < N; j++) {
-				if (tokens.nextToken().equals("1")) {
+				if (readInt() == 1) {
 					maps[i][j] = true;
 					maps[j][i] = true;
 				}
@@ -27,11 +21,10 @@ public class Main {
 		}
 		FLYD();
 		boolean answer = true;
-		tokens = new StringTokenizer(read.readLine());
-		int start = Integer.parseInt(tokens.nextToken()) - 1;
+		int start = readInt() - 1;
 		int next;
 		for (int i = 1; i < M; i++) {
-			next = Integer.parseInt(tokens.nextToken()) - 1;
+			next = readInt() - 1;
 			if (!maps[start][next]) {
 				answer = false;
 				break;
@@ -43,7 +36,21 @@ public class Main {
 		else
 			write.write("NO\n");
 		write.close();
-		read.close();
+	}
+    
+    private static int readInt() throws IOException {
+		int n, c;
+		boolean neg = false;
+		do {
+			n = System.in.read();
+			if (n == 45)
+				neg = true;
+		} while (n <= 45);
+		n &= 15;
+		while ((c = System.in.read()) > 45) {
+			n = (n << 3) + (n << 1) + (c & 15);
+		}
+		return neg ? -n : n;
 	}
 
 	private static void FLYD() {
