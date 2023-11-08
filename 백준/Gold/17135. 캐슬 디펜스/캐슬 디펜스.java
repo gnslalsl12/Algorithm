@@ -2,152 +2,159 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-
-	static int N, M, D;
-	static int[] TempMap;
-	static int[] GlobalMap;
-	static int Opps;
-	static Queue<Integer> Positions;
-	static int[][] ArrowDeltas;
+	static int N;
+	static int M;
+	static int D;
+	static int[] Map;
 	static int Result;
+	static int Enemies;
 
-	public static void main(String[] args) throws IOException {
-		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
+	public static void main(String args[]) throws IOException {
 		init();
 		solv();
+	}
+
+	private static void init() throws IOException {
+		N = readInt();
+		M = readInt();
+		D = readInt();
+		Map = new int[N];
+		Result = 0;
+		Enemies = 0;
+		for (int n = 0; n < N; n++) {
+			for (int m = 0; m < M; m++) {
+				if (readInt() == 1) {
+					Map[n] |= 1 << m;
+					Enemies++;
+				}
+			}
+		}
+	}
+
+	private static int readInt() throws IOException {
+		int n, c;
+		boolean neg = false;
+		do {
+			n = System.in.read();
+			if (n == 45)
+				neg = true;
+		} while (n <= 45);
+		n &= 15;
+		while ((c = System.in.read()) > 45) {
+			n = (n << 3) + (n << 1) + (c & 15);
+		}
+		return neg ? -n : n;
+	}
+
+	private static void solv() throws IOException {
+		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
+		setArchersWithComb(0, 0, new int[3]); // 조합으로 궁수 위치M 정하기
 		write.write(Result + "\n");
 		write.close();
 	}
 
-	public static void init() throws IOException {
-		BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer tokens = new StringTokenizer(read.readLine());
-		N = Integer.parseInt(tokens.nextToken());
-		M = Integer.parseInt(tokens.nextToken());
-		D = Integer.parseInt(tokens.nextToken());
-		TempMap = new int[N];
-		GlobalMap = new int[N];
-		Opps = 0;
-		Positions = new LinkedList<>();
-		ArrowDeltas = new int[][] { { 0, -1 }, { -1, 0 }, { 0, 1 } };
-		Result = 0;
-		for (int n = 0; n < N; n++) {
-			tokens = new StringTokenizer(read.readLine());
-			for (int m = 0; m < M; m++) {
-				if (tokens.nextToken().equals("1")) {
-					GlobalMap[n] |= 1 << m;
-					Opps++;
-				}
-			}
-		}
-		read.close();
-	}
-
-	public static void solv() {
-		getCombArchPos(0, 0, 0); // 조합으로 궁수 포지션 구하기
-		doWholePosCases(); // 모든 케이스에 따라 게임 진행
-	}
-
-	private static void getCombArchPos(int count, int start, int sel) {
+	private static void setArchersWithComb(int count, int start, int[] sel) {
 		if (count == 3) {
-			Positions.add(sel);
+			setArchersOnMap(sel); // 궁수 위치 조합 케이스
 			return;
 		}
-		for (int current = start; current < M; current++) {
-			sel |= 1 << current;
-			getCombArchPos(count + 1, current + 1, sel);
-			sel &= ~(1 << current);
+
+		for (int m = start; m < M; m++) {
+			sel[count] = m;
+			setArchersWithComb(count + 1, m + 1, sel);
 		}
+
 	}
 
-	private static void doWholePosCases() {
-		while (!Positions.isEmpty()) { // 모든 궁수 포지션 경우마다
-			TempMap = GlobalMap.clone(); // 맵 초기화
-			setGameFlows(Positions.poll()); // 게임 진행
-		}
-	}
-
-	private static void setGameFlows(int pos) {
-		// 궁수 Y좌표 구하기
-		int[] positions = new int[3];
-		int posCount = 0;
-		for (int m = 0; m < M; m++) {
-			if ((pos & 1 << m) != 0) {
-				positions[posCount++] = m;
-				if (posCount == 3)
-					break;
-			}
-		}
-		// 궁수 Y좌표에 따라 게임 진행
-		int tempOppsCount = Opps; // 현재 맵 상에 남은 적 수 카운트
-		int tempResult = 0; // 현재 궁수 좌표 케이스에서 잡은 적 수 카운트
-		while (tempOppsCount > 0) { // 남은 적이 없을 때까지
-			int elims = doShoot(positions); // 맵에서 적을 없애고 그 수만큼 값을 반환
-			tempResult += elims; // 잡은 적 수 카운트
-			tempOppsCount -= elims; // 남은 적 수 카운트
-			tempOppsCount -= setOppsAdvance(); // 적 전진시키기 + 성에 도착해서 제외된 적 수 카운트
+	private static void setArchersOnMap(int[] sel) { // 궁수 위치 기반으로 진행
+		int[] tempMap = Map.clone();
+		int remain = Enemies;
+		int tempResult = 0;
+		while (remain > 0) {
+			int killed = setShootEnemies(sel, tempMap); // 한 턴에 죽인 적 수
+			tempResult += killed; // 총 죽인 적 수 +
+			remain -= killed; // 남은 적 수 -
+			if (remain == 0)
+				break;
+			remain -= setEnemyMove(tempMap); // 적 한 칸씩 이동
 		}
 		Result = Math.max(Result, tempResult);
 	}
 
-	private static int doShoot(int[] positions) { // 맵에서 적 없애고 그 수만큼 값을 반환
-		int[][] target = new int[3][2]; // 잡은 적들 위치
-		for (int m = 0; m < 3; m++) {
-			target[m] = getBFS(positions[m]); // BFS로 각 궁수가 없앨 최선의 적 위치 구하기
+	private static int setShootEnemies(int[] sel, int[] tempMap) { // 적 쏘기
+		int removedCount = 0;
+		int[] targeted = new int[3];
+
+		for (int s = 0; s < 3; s++) {
+			int archerM = sel[s]; // M위치에 있는 궁수
+			int targetN = N - 1; // 목표 위치 N
+			int targetM = archerM; // 목표 위치 M
+
+			breakAll: while (true) {
+				if ((tempMap[targetN] & (1 << targetM)) != 0) { // 우선순위의 표적 발견
+					targeted[s] = targetN * M + targetM; // 해당 표적의 위치를 기록(중복 가능)
+					break;
+				}
+
+				while (true) { // 목표지점 이동
+					if (targetM < archerM) { // 우선순위(가장 가까이, 그리고 왼쪽) 순으로 목표 지점 이동
+						targetN--;
+					} else {
+						targetN++;
+					}
+					targetM++;
+
+					if (!isIn(targetN, targetM)) { // 이동한 목표 지점이 영역 밖이라면
+						if (targetM == archerM + D) { // 마지막 좌표까지 확인한 경우라면
+							targeted[s] = -1; // 가능한 목표가 없음
+							break breakAll;
+						}
+
+						if (targetN == N) { // 가장 왼쪽부터 다시 탐색 (피라미드 형태 이동)
+							targetN = N;
+							targetM = archerM - (targetM - archerM + 1);
+						}
+					} else { // 영역 내 목표지점임을 확인
+						break;
+					}
+				}
+			}
 		}
 
-		int targetCount = 0; // 총 몇 명 잡았는지 카운트
-		for (int[] e : target) { // 타겟 위치값들 하나씩 확인
-			if (e[0] == -1)
+		for (int targetLoc : targeted) { // 모든 목표 대상
+			if (targetLoc == -1)
 				continue;
-			else {
-				targetCount += (TempMap[e[0]] & 1 << e[1]) != 0 ? 1 : 0; // 이미 잡은 타겟인지 확인
-				TempMap[e[0]] &= ~(1 << e[1]); // 맵상에서 없애기
+			int locN = targetLoc / M;
+			int locM = targetLoc % M;
+			if ((tempMap[locN] & (1 << locM)) != 0) { // 맵에서 지우기
+				tempMap[locN] &= ~(1 << locM);
+				removedCount++;
 			}
 		}
-		return targetCount; // 총 잡은 수 반환
+		return removedCount;
 	}
 
-	private static int[] getBFS(int pos) {
-		Queue<int[]> BFSQ = new LinkedList<>();
-		int[] vis = new int[N];
-		BFSQ.add(new int[] { N - 1, pos }); // 탐색 시작위치
-		vis[N - 1] |= 1 << pos; // 시작 위치 방문처리
-		int len = 1; // 범위 제한
-
-		while (!BFSQ.isEmpty()) {
-			if (Math.sqrt(len++) > D) // 최대 거리를 넘어선 범위라면 X
-				break;
-			int[] current = BFSQ.poll();
-			if ((TempMap[current[0]] & 1 << current[1]) != 0) // 현재 탐색 위치에 적이 있다면
-				return current; // 그 위치를 반환
-			for (int[] delta : ArrowDeltas) { // BFS
-				int nextI = current[0] + delta[0];
-				int nextJ = current[1] + delta[1];
-				if (!isIn(nextI, nextJ) || (vis[nextI] & 1 << nextJ) != 0)
-					continue;
-				BFSQ.add(new int[] { nextI, nextJ });
-				vis[nextI] |= 1 << nextJ;
-			}
-		}
-		return new int[] { -1, -1 }; // 범위 내에 적이 없다면 -1 반환
-	}
-
-	private static boolean isIn(int i, int j) {
-		return i >= 0 && j >= 0 && i < N && j <= M;
-	}
-
-	private static int setOppsAdvance() { // 적 전진시키기
-		int excepted = 0; // 성까지 도착해서 제외된 적 수
+	private static int setEnemyMove(int[] tempMap) { // 적 한 칸씩 내려오기
+		int excepted = 0;
 		for (int m = 0; m < M; m++) {
-			if ((TempMap[N - 1] & 1 << m) != 0)
+			boolean before = false;
+			for (int n = 0; n < N; n++) {
+				boolean present = (tempMap[n] & (1 << m)) != 0;
+				if (before) {
+					tempMap[n] |= 1 << m;
+				} else {
+					tempMap[n] &= ~(1 << m);
+				}
+				before = present;
+			}
+			if (before)
 				excepted++;
 		}
-		for (int n = N - 1; n >= 1; n--) {
-			TempMap[n] = TempMap[n - 1];
-		}
-		TempMap[0] = 0;
 		return excepted;
+	}
+
+	private static boolean isIn(int n, int m) {
+		return n >= 0 && n < N && m >= 0 && m < M;
 	}
 
 }
