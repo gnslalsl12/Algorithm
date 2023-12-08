@@ -1,53 +1,31 @@
 let N;
 let K;
 let Haps;
-let DpTable;
 
 function init(line) {
   if (N === undefined) {
     [N, K] = line.split(" ").map(Number);
-    DpTable = Array.from(Array(N), () => Array(2).fill(-1));
   } else {
     Haps = line.split(" ").map(Number);
   }
 }
 
-function setDpTable() {
-  let stack = 0;
-  let index = 0;
-  for (let n = 0; n < N; n++) {
-    stack += Haps[n];
-    if (stack >= K) {
-      DpTable[n] = [stack - K, index];
-      while (stack >= K) {
-        stack -= Haps[index++];
-      }
-    }
-  }
-}
-
 function getResult() {
-  let result = 0;
-  let start = N;
-  let max = 0;
-  for (let n = N - 1; n >= 0; n--) {
-    if (start > n) {
-      max = 0;
+  const dpTable = Array(N + 1).fill(0);
+  let start = 0;
+  let stack = Haps[0];
+  for (let end = 1; end <= N; end++) {
+    dpTable[end] = dpTable[end - 1];
+    while (stack >= K) {
+      dpTable[end] = Math.max(dpTable[end], dpTable[start] + (stack - K));
+      stack -= Haps[start++];
     }
-    if (DpTable[n][0] > max) {
-      if (start <= n) {
-        //겹치는 부분
-        result -= max;
-      }
-      [max, start] = DpTable[n];
-      result += max;
-    }
+    stack += Haps[end];
   }
-  console.log(result);
+  console.log(dpTable[N]);
 }
 
 function solv() {
-  setDpTable();
   getResult();
 }
 
