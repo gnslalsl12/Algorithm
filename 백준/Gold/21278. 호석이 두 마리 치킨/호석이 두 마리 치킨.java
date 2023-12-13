@@ -4,7 +4,7 @@ import java.io.*;
 public class Main {
 	static int N;
 	static int M;
-	static int INF = Integer.MAX_VALUE;
+	static int INF = 10000000;
 	static int[][] Map = new int[105][105];
 	static int NodeA, NodeB;
 	static int Result = 0;
@@ -57,10 +57,7 @@ public class Main {
 				for (int via = 1; via <= N; via++) {
 					if (from == via || to == via)
 						continue;
-					if (Map[from][via] != INF && Map[via][to] != INF) {
-						Map[from][to] = Math.min(Map[from][to], Map[from][via] + Map[via][to]);
-						Map[to][from] = Map[from][to];
-					}
+					Map[to][from] = Map[from][to] = Math.min(Map[from][to], Map[from][via] + Map[via][to]);
 				}
 			}
 		}
@@ -83,6 +80,8 @@ public class Main {
 	private static int getResult(int nA, int nB) {
 		int sum = 0;
 		for (int j = 1; j <= N; j++) {
+			if (j == nA || j == nB)
+				continue;
 			sum += Math.min(Map[nA][j], Map[nB][j]);
 		}
 		return sum * 2;
