@@ -52,12 +52,12 @@ public class Main {
 	}
 
 	private static void setFloyd() { // 플로이드 워셜로 각 from에서 to까지 최소 경로 구하기
-		for (int from = 1; from <= N; from++) {
-			for (int to = from + 1; to <= N; to++) {
-				for (int via = 1; via <= N; via++) {
+		for (int via = 1; via <= N; via++) {
+			for (int from = 1; from <= N; from++) {
+				for (int to = from + 1; to <= N; to++) {
 					if (from == via || to == via)
 						continue;
-					Map[to][from] = Map[from][to] = Math.min(Map[from][to], Map[from][via] + Map[via][to]);
+					Map[from][to] = Map[to][from] = Math.min(Map[from][to], Map[from][via] + Map[via][to]);
 				}
 			}
 		}
