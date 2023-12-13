@@ -47,8 +47,7 @@ public class Main {
 		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
 		setFloyd();
 		setSpecificNodes();
-		getResult();
-		write.write(Math.min(NodeA, NodeB) + " " + Math.max(NodeA, NodeB) + " " + Result + "\n");
+		write.write(NodeA + " " + NodeB + " " + Result + "\n");
 		write.close();
 	}
 
@@ -68,54 +67,25 @@ public class Main {
 	}
 
 	private static void setSpecificNodes() {
-		if (N == 2) {
-			NodeA = 1;
-			NodeB = 2;
-			Result = 0;
-			return;
-		}
-		int[] min = new int[] { -1, INF };
-		for (int i = 1; i <= N; i++) { // 모든 노드까지의 경로 최소합을 가진 곳이 첫번째 치킨집 위치
-			int sum = 0;
-			for (int j = 1; j <= N; j++) {
-				sum += Map[i][j];
-			}
-			if (min[1] > sum) {
-				min[0] = i;
-				min[1] = sum;
-			}
-		}
-		NodeA = min[0]; // 첫번쨰 치킨집 위치
-
-		min = new int[] { -1, INF };
-		for (int i = 1; i <= N; i++) { // 모든 노드들까지의 경로 중 NodeA보다 가깝게 닿는 지점의 총 합산 수가 가장 큰 곳이 두번쨰 치킨집 위치
-			if (i == NodeA)
-				continue;
-			for (int j = 1; j <= N; j++) {
-				if (Map[i][j] <= Map[NodeA][j]) {
-					Map[i][N + 1] += Map[i][j];
+		Result = INF;
+		for (int nA = 1; nA <= N; nA++) {
+			for (int nB = nA + 1; nB <= N; nB++) {
+				int tempResult = getResult(nA, nB);
+				if (Result > tempResult) {
+					NodeA = nA;
+					NodeB = nB;
+					Result = tempResult;
 				}
 			}
-			if (Map[i][N + 1] != 0 && min[1] > Map[i][N + 1]) {
-				min[0] = i;
-				min[1] = Map[i][N + 1];
-			}
-		}
-		NodeB = min[0]; // 두번쨰 치킨집 위치
-
-		for (int j = 1; j <= N; j++) {
-			if (j == NodeA || j == NodeB)
-				continue;
-			Result += Math.min(Map[NodeA][j], Map[NodeB][j]); // 최소 왕복 합산 수 구하기
 		}
 	}
 
-	private static void getResult() {
+	private static int getResult(int nA, int nB) {
+		int sum = 0;
 		for (int j = 1; j <= N; j++) {
-			if (j == NodeA || j == NodeB)
-				continue;
-			Result += Math.min(Map[NodeA][j], Map[NodeB][j]);
+			sum += Math.min(Map[nA][j], Map[nB][j]);
 		}
+		return sum * 2;
 	}
 
 }
