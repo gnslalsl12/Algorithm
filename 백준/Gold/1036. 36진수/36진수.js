@@ -26,16 +26,15 @@ const convBn = (count, pow) => {
 const getWholeSubs = () => {
   //각 알파벳을 Z로 바꿨을 때 추가되어야하는 수치값 배열
   for (const num of Nums) {
-    let tempNum = "";
     for (let i = 0; i < num.length; i++) {
       const charNum = parseInt(num.charAt(i), 36); //문자 하나를 10진수로 변환
       CharNumArray[charNum] += convBn(charNum, num.length - 1 - i); //해당 문자를 Z로 바꿨을 때 추가해야하는 값 추가
     }
   }
-  CharNumArray.sort((x1, x2) => (x1 > x2 ? -1 : 1)); //내림차순 정렬
 };
 
 const getResult = () => {
+  CharNumArray.sort((x1, x2) => (x1 > x2 ? -1 : 1)); //내림차순 정렬
   for (let i = 0; i < K; i++) {
     if (CharNumArray[i] === 0) break;
     OrgSum += CharNumArray[i];
