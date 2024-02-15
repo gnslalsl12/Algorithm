@@ -6,7 +6,7 @@ public class Main {
     static int M;
     static ArrayList<Integer>[] NodeList = new ArrayList[1005];
     static int[][] EdgeMap = new int[1005][1005];
-    static boolean[] MinPath = new boolean[5005];
+    static Queue<Integer> MinPath = new LinkedList<>();
     static int MinValue = 0;
     static int MaxValue = 0;
 
@@ -48,11 +48,8 @@ public class Main {
     private static void solv() throws IOException {
         BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
         getDefaultDijkstra();
-        for (int m = 1; m <= M; m++) {
-            // 최소 경로에 포함되는 엣지인 경우에 새로운 최소 경로 구하기
-            if (MinPath[m]) {
-                getBlockedDijkstra(m);
-            }
+        while (!MinPath.isEmpty()) {
+            getBlockedDijkstra(MinPath.poll());
         }
         write.write(getResult() + "\n");
         write.close();
@@ -65,7 +62,6 @@ public class Main {
 
         PriorityQueue<PathCase> dijkPq = new PriorityQueue<>();
         dijkPq.add(new PathCase(1, 0, new LinkedList<>(), 0));
-        Queue<Integer> minPath = new LinkedList<>();
         while (!dijkPq.isEmpty()) {
             PathCase current = dijkPq.poll();
             int from = current.arrived;
@@ -78,7 +74,7 @@ public class Main {
                 break;
             // 도착지점까지 온 경우 minPath 갱신
             if (from == N) {
-                minPath = current.path;
+                MinPath = current.path;
                 continue;
             }
             for (int to : NodeList[from]) {
@@ -90,9 +86,6 @@ public class Main {
                     dijkPq.add(new PathCase(to, newTime, current.path, pathNum));
                 }
             }
-        }
-        while (!minPath.isEmpty()) {
-            MinPath[minPath.poll()] = true;
         }
         MinValue = dijkMap[N];
     }
