@@ -6,7 +6,7 @@ public class Main {
     static int M;
     static ArrayList<Integer>[] NodeList = new ArrayList[1005];
     static int[][] EdgeMap = new int[1005][1005];
-    static Queue<Integer> MinPath = new LinkedList<>();
+    static int[] MinPath = new int[1005];
     static int MinValue = 0;
     static int MaxValue = 0;
 
@@ -29,7 +29,7 @@ public class Main {
             int t = readInt();
             NodeList[a].add(b); // 각 노드에 연결된 엣지 번호
             NodeList[b].add(a);
-            EdgeMap[a][b] = EdgeMap[b][a] = t * 10000 + m; // 엣지당 걸리는 시간, 엣지 번호
+            EdgeMap[a][b] = EdgeMap[b][a] = t; // 엣지당 걸리는 시간, 엣지 번호
         }
     }
 
@@ -48,9 +48,7 @@ public class Main {
     private static void solv() throws IOException {
         BufferedWriter write = new BufferedWriter(new OutputStreamWriter(System.out));
         getDefaultDijkstra();
-        while (!MinPath.isEmpty()) {
-            getBlockedDijkstra(MinPath.poll());
-        }
+        getBlockedDijkstra();
         write.write(getResult() + "\n");
         write.close();
     }
@@ -60,37 +58,42 @@ public class Main {
         Arrays.fill(dijkMap, INF);
         dijkMap[1] = 0;
 
-        PriorityQueue<PathCase> dijkPq = new PriorityQueue<>();
-        dijkPq.add(new PathCase(1, 0, new LinkedList<>(), 0));
+        PriorityQueue<int[]> dijkPq = new PriorityQueue<>((x1, x2) -> x1[0] - x2[0]);
+        dijkPq.add(new int[] { 0, 1 });
         while (!dijkPq.isEmpty()) {
-            PathCase current = dijkPq.poll();
-            int from = current.arrived;
-            int timeStacked = current.timeStacked;
+            int[] current = dijkPq.poll();
+            int timeStacked = current[0];
+            int from = current[1];
             // 최소값이 갱신됐으면 패스
             if (dijkMap[from] != timeStacked)
                 continue;
-            // 도착지점 최소값보다 크면 중지
-            if (dijkMap[N] < timeStacked)
+            // 도착지점 최소값보다 크면 / 끝까지 도착시 중지
+            if (dijkMap[N] < timeStacked || from == N)
                 break;
-            // 도착지점까지 온 경우 minPath 갱신
-            if (from == N) {
-                MinPath = current.path;
-                continue;
-            }
             for (int to : NodeList[from]) {
-                int newPathInfo = EdgeMap[from][to];
-                int pathNum = newPathInfo % 10000;
-                int newTime = newPathInfo / 10000 + timeStacked;
+                int newTime = EdgeMap[from][to] + timeStacked;
                 if (dijkMap[to] > newTime) {
                     dijkMap[to] = newTime;
-                    dijkPq.add(new PathCase(to, newTime, current.path, pathNum));
+                    MinPath[to] = from; // 최단 경로 중 to로 오는 node 번호는 from
+                    dijkPq.add(new int[] { newTime, to });
                 }
             }
         }
         MinValue = dijkMap[N];
     }
 
-    private static void getBlockedDijkstra(int blocked) {
+    private static void getBlockedDijkstra() {
+        int to = N;
+        int from = MinPath[N];
+        while (from > 0) {
+            setBlocked(from, to);
+            int tempFrom = from;
+            from = MinPath[from];
+            to = tempFrom;
+        }
+    }
+
+    private static void setBlocked(int minFrom, int minTo) {
         int[] dijkMap = new int[N + 1];
         Arrays.fill(dijkMap, INF);
         dijkMap[1] = 0;
@@ -108,11 +111,9 @@ public class Main {
                 break;
             }
             for (int to : NodeList[from]) {
-                int newPathInfo = EdgeMap[from][to];
-                int pathNum = newPathInfo % 10000;
-                if (pathNum == blocked)
+                int newTime = EdgeMap[from][to] + timeStacked;
+                if ((from == minFrom && to == minTo) || (from == minTo && to == minFrom))
                     continue;
-                int newTime = newPathInfo / 10000 + timeStacked;
                 if (dijkMap[to] > newTime) {
                     dijkMap[to] = newTime;
                     dijkPq.add(new int[] { newTime, to });
@@ -129,25 +130,6 @@ public class Main {
         } else {
             return MaxValue - MinValue;
         }
-    }
-
-    private static class PathCase implements Comparable<PathCase> {
-        int arrived;
-        int timeStacked;
-        Queue<Integer> path;
-
-        PathCase(int arrived, int timeStacked, Queue<Integer> beforePath, int newPath) {
-            this.arrived = arrived;
-            this.timeStacked = timeStacked;
-            this.path = new LinkedList<>(beforePath);
-            this.path.add(newPath);
-        }
-
-        @Override
-        public int compareTo(PathCase obj) {
-            return this.timeStacked - obj.timeStacked;
-        }
-
     }
 
 }
