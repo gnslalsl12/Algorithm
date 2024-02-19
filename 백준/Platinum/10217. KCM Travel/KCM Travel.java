@@ -20,9 +20,8 @@ public class Main {
         read.readLine();
         StringTokenizer tokens = new StringTokenizer(read.readLine());
         N = Integer.parseInt(tokens.nextToken());
-        PriorityQueue<Planes>[] tempPqs = new PriorityQueue[N + 1];
         for (int n = 1; n <= N; n++) {
-            tempPqs[n] = new PriorityQueue<>();
+            NodeList[n] = new ArrayList<>();
         }
         M = Integer.parseInt(tokens.nextToken());
         K = Integer.parseInt(tokens.nextToken());
@@ -32,10 +31,7 @@ public class Main {
             int v = Integer.parseInt(tokens.nextToken()); // to
             int c = Integer.parseInt(tokens.nextToken()); // cost
             int d = Integer.parseInt(tokens.nextToken()); // time
-            tempPqs[u].add(new Planes(v, c, d));
-        }
-        for (int n = 1; n <= N; n++) {
-            NodeList[n] = new ArrayList<>(tempPqs[n]);
+            NodeList[u].add(new Planes(v, c, d));
         }
         read.close();
     }
@@ -56,6 +52,8 @@ public class Main {
 
         for (int cost = 0; cost <= M; cost++) { // cost 비용을 가진 상태에서
             for (int from = 1; from <= N; from++) { // from에서
+                if (DistMap[from][cost] == INF) // cost로 해당 from 공항까지 도착하는 방법이 없다면 패스
+                    continue;
                 for (Planes next : NodeList[from]) { // 소지한 티켓 중
                     if (cost + next.cost <= M) { // 갈 수 있는 비용이라면
                         DistMap[next.to][cost + next.cost] = Math.min(DistMap[next.to][cost + next.cost],
@@ -73,7 +71,7 @@ public class Main {
 
     }
 
-    private static class Planes implements Comparable<Planes> {
+    private static class Planes {
         int to;
         int cost;
         int time;
@@ -84,10 +82,6 @@ public class Main {
             this.time = time;
         }
 
-        @Override
-        public int compareTo(Planes obj) {
-            return this.time - obj.time;
-        }
     }
 
 }
